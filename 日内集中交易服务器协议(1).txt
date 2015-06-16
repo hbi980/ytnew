@@ -1,0 +1,413 @@
+附加说明：所有协议请求的应答信息通用应答记录如下，以下协议中应答结果这2个字段就不写了
+	  retcode		int		结果标志成功还是失败，>=0成功 <0失败
+	  comment		char(128)	处理失败时有效，返回失败信息
+
+功能号范围介绍【200001-210000】：
+1、 非订阅类
+    200001-202000
+2、 订阅类
+    202001-202100
+3、 推送类
+    202101-202500
+
+0、登录
+no:150001
+usercode:
+password:
+
+
+日内集中交易服务器：
+1、 服务器清算
+    编号：100501
+    类型：命令同步事件
+    使用：转发服务器非订阅类公共部分，只有管理员才可以进行
+    入参：servertype		int		服务器类型，0-全部 2-日内集中交易服务器
+    出参：无
+
+2、 时间段修改
+    编号：100503
+    类型：命令同步事件
+    使用：转发服务器非订阅类公共部分，只有管理员才可以进行
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  timetype		int		时间类型，0-交易时间 1-申报时间 2-撮合时间，后两者互换用到
+	  timestartam		int		上午开始时间，HHMMSS格式
+	  timeendam		int		上午结束时间，HHMMSS格式
+	  timestartpm		int		下午开始时间，HHMMSS格式
+	  timeendpm		int		下午结束时间，HHMMSS格式
+	  timestartnight	int		夜间开始时间，HHMMSS格式
+	  timeendnight		int		夜间结束时间，HHMMSS格式
+    出参：无																
+					
+3、 可用资金查询
+    编号：200010
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+    出参: usablemoney		double  	可用资金
+		
+4、 可用股数查询(========)
+    编号：200011
+    类型：查询异步事件
+    使用：客户端请求,根据需要可能通过集中交易柜台服务器获取
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  symbol		char(20)	证券代码，不送查全部
+	  exchange		char(20)	交易市场，如果symbol不为空则必须也送市场
+	  side			int 		交易类别，1-现金买入 2-融券卖出 3-融资买入 4-现券卖出
+	  entrustprice		double   	委托价格
+    出参: servertype		int		服务器类型，4-日内柜台服务器
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  stockamount		int	  	可用股数
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+					
+5、 未完成委托查询(=================)
+    编号：200012
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  lasttime		char(30)	最后更新时间
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  side			int 		交易类别，1-现金买入 2-融券卖出 3-融资买入 4-现券卖出
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  entrustdate		char(8)	  	委托日期，YYYYMMDD格式
+	  entrusttime		char(8)	  	委托时间，HH:MM:SS格式
+	  entrustno		char(50)  	委托编号【虚拟委托编号】
+	  entrustprice		double   	委托价格
+	  needentrustamount	int		预委托数量
+	  entrustamount		int	   	委托数量
+	  stockturnover		int	   	成交数量
+	  entruststatus		char(2)   	委托状态，0-未报 2-已报 3-已报待撤 4-部成待撤 5-部撤 6-已撤 7-部成 8-已成 9-废单
+	  lasttime		char(30)	最后更新时间
+
+6、 交易日志查询
+    编号：200013
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  logindex		int		日志索引
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  side			int 		交易类别，1-现金买入 2-融券卖出 3-融资买入 4-现券卖出
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  entrustdate		char(8)	  	委托日期，YYYYMMDD格式
+	  entrusttime		char(8)	  	委托时间，HH:MM:SS格式
+	  entrustno		char(50)  	委托编号【虚拟委托编号】
+	  entruststatus		char(2)   	委托状态，0-未报 2-已报 3-已报待撤 4-部成待撤 5-部撤 6-已撤 7-部成 8-已成 9-废单
+	  event			char(255) 	日志记录信息
+	  logindex		int		日志索引
+
+7、 当前仓位查询
+    编号：200014
+    类型：查询异步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号，为0则查询全部
+	  symbol		char(20)  	证券代码，为空则查询全部
+    出参: totalmarketvalue	double     	总市值（第一条记录返回）
+	  floatprofitorloss	double     	浮动盈亏（第一条记录返回）
+	  achievefpl		double    	实现盈亏（第一条记录返回）
+	  userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  stockamount		int	   	当前数量
+	  side			int	   	方向，1-多仓 -1-空仓
+	  currentfloatprofit	double     	当前浮盈
+	  averageprice		double     	平均价格
+
+8、 个人成交记录明细查询
+    编号：200015
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  begindate		char(8)	   	开始日期，YYYYMMDD格式
+	  enddate		char(8)	   	结束日期，YYYYMMDD格式
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  side			int 		交易类别，1-现金买入 2-融券卖出 3-融资买入 4-现券卖出
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  entrustdate		char(8)	  	委托日期，YYYYMMDD格式
+	  entrusttime		char(8)	  	委托时间，HH:MM:SS格式
+	  entrustno		char(50)  	委托编号
+	  stockturnover		int	   	成交数量
+	  bargainprice		double   	成交价格
+	  entrustfee		double		交易费用
+
+9、 个人成交记录统计查询
+    编号：200016
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  begindate		char(8)	   	开始日期，YYYYMMDD格式
+	  enddate		char(8)	   	结束日期，YYYYMMDD格式
+    出参: achievefpl		double     	实现盈亏（第一条记录返回）
+	  totaltrademoney	double     	总交易额（第一条记录返回）
+	  userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  side			int 		交易类别，1-现金买入 2-融券卖出 3-融资买入 4-现券卖出
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+ 	  stockturnover		int	   	成交数量
+	  entrustcount		int	        交易笔数
+	  priceturnover		double     	交易额
+	  profits		double   	已实现利润
+	  entrustfee		double		交易费用
+
+10、委托下单[retcode=-8时返回结果需弹框提示]
+    编号：200017
+    类型：命令同步事件
+    使用：客户端请求，需要转发到日内柜台服务器执行
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  side			int 		交易类别，1-现金买入 2-融券卖出 3-融资买入 4-现券卖出
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  entrustprice		double   	委托价格
+	  entrustamount		int	   	委托数量
+	  uplimitflag		int  	    	涨停融券卖出标志，0-非涨停融券卖出 1-涨停融券卖出
+    出参: 无
+
+11、委托撤单[retcode=-8时返回结果需弹框提示]
+    编号：200018
+    类型：命令同步事件
+    使用：客户端请求，需要转发到日内柜台服务器执行
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  entrustno		char(50)  	委托编号【虚拟委托编号】
+    出参: 无
+
+12、撤当前虚拟账号的当前代码的最近的一笔委托[retcode=-8时返回结果需弹框提示]
+    编号：200019
+    类型：命令同步事件
+    使用：客户端请求，需要转发到集中交易柜台服务器执行
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  symbol		char(20)  	证券代码
+	  exchange		char(20)  	交易市场
+    出参: 无
+
+13、撤当前虚拟账号的当前代码的所有委托[retcode=-8时返回结果需弹框提示]
+    编号：200020
+    类型：命令同步事件
+    使用：客户端请求，需要转发到集中交易柜台服务器执行
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  symbol		char(20)  	证券代码
+	  exchange		char(20)  	交易市场
+    出参: 无
+
+14、互换系统借入方报价[retcode=-8时返回结果需弹框提示]
+    编号：200021
+    类型：命令异步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  stockamount		int  		借入数量，如果为0则表示删除数量
+	  userrate		double  	券源利率（借入方给出的利率）
+	  begindate		int	   	开始日期
+	  enddate		int	   	结束日期
+    出参: 无
+
+15、互换系统借入方借入信息查询
+    编号：200022
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号，为0则查询全部
+	  symbol		char(20)  	证券代码，送空查全部
+	  exchange		char(20)  	交易市场，送空查全部
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  stockamount		int	  	需要数量
+	  userrate		double		券源利率（借入方给出的利率）
+	  begindate		int	   	开始日期
+	  enddate		int	   	结束日期
+
+16、互换系统借入方报价匹配情况查询
+    编号：200023
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号，为0则查询全部
+	  symbol		char(20)  	证券代码，送空查全部
+	  exchange		char(20)  	交易市场，送空查全部
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  userrate		double  	券源利率（借入方给出的利率）
+	  stockamount		int  		需要数量
+	  matchamount		int  		实际匹配到的数量
+
+17、互换系统借入方借入方转入平台资金查询
+    编号：200024
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号，为0则查询全部
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  money			double  	转入资金
+
+18、互换系统借入方借入方转入平台资金设置
+    编号：200025
+    类型：命令异步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  money			double  	转入资金
+    出参: 无
+
+19、互换系统借出方借出利率查询
+    编号：200026
+    类型：查询同步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号，为0则查询全部，这里不排除以后单独自然人单独利率的方式
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  rate1			double  	热门利率
+	  rate2			double  	非热门利率
+	  begindate		char(8)	   	开始日期，YYYYMMDD格式
+	  enddate		char(8)	   	结束日期，YYYYMMDD格式
+
+20、互换系统借出方借出利率设置
+    编号：200027
+    类型：命令异步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  rate1			double  	热门利率
+	  rate2			double  	非热门利率
+	  begindate		char(8)	   	开始日期，YYYYMMDD格式
+	  enddate		char(8)	   	结束日期，YYYYMMDD格式
+    出参: 无
+
+21、互换系统借出方持仓查询
+    编号：200028
+    类型：查询异步事件
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  symbol		char(20)  	证券代码，送空查全部
+	  exchange		char(20)  	交易市场，送空查全部
+    出参: tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  stockamount		int	  	可用数量
+
+
+22、互换系统借出方报价[retcode=-8时返回结果需弹框提示]
+    编号：200029
+    类型：执行类
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  stockamount		int  		借出数量，如果为0则表示删除数量
+	  begindate		int	   	开始日期
+	  enddate		int	   	结束日期
+    出参: 无
+
+23、互换系统借出方借出信息查询
+    编号：200030
+    类型：查询类
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号，为0则查询全部
+	  symbol		char(20)  	证券代码，送空查全部
+	  exchange		char(20)  	交易市场，送空查全部
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  stockamount		int  		借出数量
+	  begindate		int	   	开始日期
+	  enddate		int	   	结束日期
+
+24、互换系统借出方报价匹配情况查询
+    编号：200031
+    类型：查询类
+    使用：客户端请求
+    入参：servertype		int		服务器类型，2-日内集中交易服务器
+	  userid		int		交易员编号
+	  tradeaccountid	int		虚拟账户编号，为0则查询全部
+	  symbol		char(20)  	证券代码，送空查全部
+	  exchange		char(20)  	交易市场，送空查全部
+    出参: userid		int		交易员编号
+	  username		char(20)	交易员别名
+	  tradeaccountid	int		虚拟账户编号
+	  tradeaccountname	char(20)	虚拟账户别名
+	  symbol		char(20)  	证券代码
+	  cname			char(20)  	证券名称
+	  exchange		char(20)  	交易市场
+	  userrate		double  	券源利率（借入方给出的利率，管理员可以看到，借出方的话）
+	  stockamount		int	  	借出数量
+	  matchamount		int  		实际匹配到的数量
