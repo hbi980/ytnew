@@ -14,7 +14,7 @@
 
 enum FUNC_ID
 {
-	LOGIN				= 100001,
+	LOGIN				= 150001,
 	QURELATED			= 100013,
 	QUMONEY				= 100100,
 	QUAMOUNT			,
@@ -225,7 +225,7 @@ int Trade_Login(tagTradeReqLogin *pReqLogin, char *errmsg, int len)
 	YTData_AppendRow(datahandle);
 	YTData_AddFieldString(datahandle, "user", pReqLogin->User);
 	YTData_AddFieldPwd(datahandle, "pwd", pReqLogin->Password);
-	return (SendData(datahandle,100001,conn_login) );
+	return (SendData(datahandle,150001,conn_login) );
 }
 
 int Trade_QuRelated(tagTradeReqQuRelated *pReqQuRelated, char *errmsg, int len)
