@@ -12,6 +12,8 @@
 #define IDC_btn_stop                    1006
 #define IDC_timespan                    1007
 #define IDC_BTN_LOGON                   1008
+#define IDC_TM_BEGIN2                   1009
+#define IDC_Count                       1009
 
 // Next default values for new objects
 // 

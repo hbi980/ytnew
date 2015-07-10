@@ -360,6 +360,8 @@ struct tagTradeCallBackFunc
 };
 
 //-------------------------------------导出函数定义-------------------------------------
+TRADEDLL_API_EXPORT int iCurConnects;//当前已建立的数据库连接数量 
+
 // 获取版本：“V1.0.0.1”格式
 TRADEDLL_API_EXPORT const char * Trade_GetVer(void);
 

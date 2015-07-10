@@ -30,4 +30,4 @@
 #include "YTThread.h"
 #include "YTDll.h"
 
-#pragma comment(lib, "../../../YTPublic/YTInclude/YTUnit/YTUnit.lib")
+#pragma comment(lib, "YTUnit.lib")

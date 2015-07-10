@@ -3,7 +3,7 @@
 #include "basefuncs.h"
 #include "TraderAPI.h"
 
-#pragma comment(lib,"lib/YTTradeApi.lib")
+#pragma comment(lib,"YTTradeApi.lib")
 
 std::vector<FuncAnsInfo*> g_vctAnsInfo;
 HANDLE g_event;

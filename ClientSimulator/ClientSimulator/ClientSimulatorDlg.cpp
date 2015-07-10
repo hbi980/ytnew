@@ -51,6 +51,7 @@ void CClientSimulatorDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_list_rpt, m_lst_Rpt);
 	DDX_Text(pDX, IDC_timespan, m_sTmSpan);
 	DDX_Control(pDX, IDC_timespan, m_editTimespan);
+  DDX_Text(pDX, IDC_Count, iCurConnects);
 }
 
 BEGIN_MESSAGE_MAP(CClientSimulatorDlg, CDialog)
@@ -61,6 +62,7 @@ BEGIN_MESSAGE_MAP(CClientSimulatorDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTN_LOGON, &CClientSimulatorDlg::OnBnClickedBtnLogon)
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(IDC_btn_stop, &CClientSimulatorDlg::OnBnClickedbtnstop)
+  ON_EN_SETFOCUS(IDC_Count, &CClientSimulatorDlg::OnEnSetfocusCount)
 END_MESSAGE_MAP()
 
 
@@ -520,6 +522,7 @@ void CClientSimulatorDlg::OnBnClickedBtnLogon()
 			{
 				MessageBox("³¬Ê±£¬µÇÂ½Ê§°Ü£¡\n");
 			}
+      UpdateData(FALSE);
 		}
 	}
 	else
@@ -552,4 +555,10 @@ void CClientSimulatorDlg::OnClose()
 void CClientSimulatorDlg::OnBnClickedbtnstop()
 {
 	m_isStop = true;
+}
+
+
+void CClientSimulatorDlg::OnEnSetfocusCount()
+{
+  UpdateData(FALSE);
 }

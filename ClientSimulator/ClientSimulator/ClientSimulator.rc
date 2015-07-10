@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(中华人民共和国) resources
+// 中文(简体，中国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
-#ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 #pragma code_page(936)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -89,6 +87,7 @@ BEGIN
     LTEXT           "预约测试时长(秒)",IDC_STATIC,105,10,67,8
     EDITTEXT        IDC_timespan,169,8,40,14,ES_AUTOHSCROLL | ES_NUMBER
     PUSHBUTTON      "客户登录",IDC_BTN_LOGON,5,4,56,19
+    EDITTEXT        IDC_Count,67,8,31,14,ES_AUTOHSCROLL | ES_READONLY
 END
 
 
@@ -130,7 +129,22 @@ BEGIN
     END
 END
 
-#endif    // 中文(中华人民共和国) resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_CLIENTSIMULATOR_DIALOG, DIALOG
+    BEGIN
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

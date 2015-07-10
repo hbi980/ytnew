@@ -209,23 +209,29 @@ int Trade_Login(tagTradeReqLogin *pReqLogin, char *errmsg, int len)
 	{
 		ReleaseConns();
 	}	
+  
 
-	void * datahandle = YTData_NewData();
-	void* conn_login = YTConn_NewConn(ptrConfig);
-	if (YTConn_Connect(conn_login) < 0)
-	{
-		strcpy_s(errmsg,len,"与服务端建立连接失败！");
-		return -2;
-	}
+  for(int k=0;k<imaxConnects/2;k++)  
+  { 
+    void * datahandle = YTData_NewData();
+    void* conn_login = YTConn_NewConn(ptrConfig);
+    if (YTConn_Connect(conn_login) < 0)
+    {
+      strcpy_s(errmsg,len,"与服务端建立连接失败！");
+      return -2;
+    } 
 
-	if(datahandle == NULL)
-	{
-		return -4;
-	}
-	YTData_AppendRow(datahandle);
-	YTData_AddFieldString(datahandle, "user", pReqLogin->User);
-	YTData_AddFieldPwd(datahandle, "pwd", pReqLogin->Password);
-	return (SendData(datahandle,150001,conn_login) );
+    if(datahandle == NULL)
+    {
+      return -4;
+    }
+    YTData_AppendRow(datahandle);
+    YTData_AddFieldString(datahandle, "user", pReqLogin->User);
+    YTData_AddFieldPwd(datahandle, "pwd", pReqLogin->Password);
+    SendData(datahandle,150001,conn_login);
+  }  
+
+  return 0;  
 }
 
 int Trade_QuRelated(tagTradeReqQuRelated *pReqQuRelated, char *errmsg, int len)
@@ -598,7 +604,7 @@ int Trade_DisAllEntrust(tagTradeReqDisAllEntrust *pReqDisAllEntrust, char *errms
 /**********************************以下实现回调函数*********************************/
 
 
-void MakeRtnData(long reqno, unsigned long funcid, long errcode,const char * errInfo , const char * retbuf, long len,bool islast)
+void MakeRtnData(void * pConn,long reqno, unsigned long funcid, long errcode,const char * errInfo , const char * retbuf, long len,bool islast)
 {
 	tagTradeErrorInfo *pErrInfo = new tagTradeErrorInfo();
 	pErrInfo->ErrorID = 0;
@@ -642,21 +648,24 @@ void MakeRtnData(long reqno, unsigned long funcid, long errcode,const char * err
 			iUserID = pPara->UserID;
 
 			//登陆成功之后，初始化连接池。连接池开始有maxconn/2 个连接
-			void* conn;  
-			EnterCriticalSection(&secLock); 
-			for(int k=0;k<imaxConnects/2;k++)  
-			{ 
-				conn = YTConn_NewConn(ptrConfig);
-				if (YTConn_Connect(conn) >=0)
-				{
-					connLists.push_back(conn);
-					iCurConnects++;
-				}
-			}  
-			LeaveCriticalSection(&secLock);  
-			pFuncList->Func_TradeAnsLogin(pPara,pErrInfo);
-			delete pPara;
-			
+      void* conn = pConn;  
+      EnterCriticalSection(&secLock); 
+      //for(int k=0;k<imaxConnects/2;k++)  
+      //{ 
+      //  conn = YTConn_NewConn(ptrConfig);
+      //  if (YTConn_Connect(conn) >=0)
+      //  {
+      //    connLists.push_back(conn);
+      //    iCurConnects++;
+      //  }
+      //}  
+      connLists.push_back(conn);
+      iCurConnects++;
+      LeaveCriticalSection(&secLock);  
+      if(iCurConnects >= imaxConnects/2){ 
+			  pFuncList->Func_TradeAnsLogin(pPara,pErrInfo);
+      }
+			delete pPara;			
 		}
 		break;
 	case QURELATED:
@@ -901,7 +910,7 @@ void MakeRtnData(long reqno, unsigned long funcid, long errcode,const char * err
 
 void __stdcall CallBackDataAllRet(void * pConn, int reqno, unsigned int funcid, int errcode, const char * retbuf, int len)
 {
-	MakeRtnData(reqno, funcid, errcode,"", retbuf, len,true);
+	MakeRtnData(pConn,reqno, funcid, errcode,"", retbuf, len,true);
 	EnterCriticalSection(&secLock);
 	connLists.push_back(pConn);
 	LeaveCriticalSection(&secLock);
@@ -909,7 +918,7 @@ void __stdcall CallBackDataAllRet(void * pConn, int reqno, unsigned int funcid, 
 
 void __stdcall CallBackDataPartRet(void * pConn, int reqno, unsigned int funcid, int errcode, const char * retbuf, int len)
 {
-	MakeRtnData(reqno, funcid, errcode,"", retbuf, len,false);
+	MakeRtnData(pConn,reqno, funcid, errcode,"", retbuf, len,false);
 	EnterCriticalSection(&secLock);
 	connLists.push_back(pConn);
 	LeaveCriticalSection(&secLock);
@@ -917,7 +926,7 @@ void __stdcall CallBackDataPartRet(void * pConn, int reqno, unsigned int funcid,
 
 void __stdcall CallBackTimeOut(void * pConn, int reqno, unsigned int funcid)
 {
-	MakeRtnData(reqno, funcid, -99,"通讯超时！", "", 0,true);
+	MakeRtnData(pConn,reqno, funcid, -99,"通讯超时！", "", 0,true);
 	if (YTConn_Connect(pConn) >= 0)
 	{
 		EnterCriticalSection(&secLock);

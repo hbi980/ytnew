@@ -65,4 +65,5 @@ public:
 	CEdit m_editTimespan;
 public:
 	afx_msg void OnBnClickedbtnstop();
+  afx_msg void OnEnSetfocusCount();
 };
