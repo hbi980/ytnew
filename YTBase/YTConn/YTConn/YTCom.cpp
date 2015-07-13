@@ -624,6 +624,7 @@ int CYTCom::ProvData(char * data, int len)
 	{
 		memcpy(&datalen, data+sizeof(USDataHeader), 4);
 	}
+  char sztmpretmsg[128] = {0};
 
 	DataRet(pUSHead->reqserailid, pUSHead->funcid);
 	if(pUSHead->funcid==150001 && pUSHead->result==0)
@@ -643,7 +644,7 @@ int CYTCom::ProvData(char * data, int len)
 			}
 			else
 			{
-				char sztmpretmsg[128] = {0};
+				
 				YTData_GetRetMsg(datahandle, sztmpretmsg, sizeof(sztmpretmsg));
 			}
 		}

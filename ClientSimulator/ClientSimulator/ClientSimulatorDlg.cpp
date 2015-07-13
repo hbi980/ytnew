@@ -513,14 +513,20 @@ void CClientSimulatorDlg::OnBnClickedBtnLogon()
 		else
 		{
 			DWORD dResult = ::WaitForSingleObject(g_event,10*1000);
+      if(iCurConnects > 0){
+        m_Client.isLogon = true;
+        MessageBox("µÇÂ½³É¹¦\n");
+      }
 			if (dResult == WAIT_OBJECT_0)
 			{
 				m_Client.isLogon = true;
-				MessageBox("µÇÂ½³É¹¦\n");
+				//MessageBox("µÇÂ½³É¹¦\n");
 			}
 			else
 			{
-				MessageBox("³¬Ê±£¬µÇÂ½Ê§°Ü£¡\n");
+        if(iCurConnects <= 0){
+				  MessageBox("³¬Ê±£¬µÇÂ½Ê§°Ü£¡\n");
+        }
 			}
       UpdateData(FALSE);
 		}

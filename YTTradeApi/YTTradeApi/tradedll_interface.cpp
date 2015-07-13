@@ -218,16 +218,18 @@ int Trade_Login(tagTradeReqLogin *pReqLogin, char *errmsg, int len)
     if (YTConn_Connect(conn_login) < 0)
     {
       strcpy_s(errmsg,len,"与服务端建立连接失败！");
-      return -2;
+      //return -2;
+      continue;
     } 
 
     if(datahandle == NULL)
     {
-      return -4;
+      //return -4;
+      continue;
     }
     YTData_AppendRow(datahandle);
-    YTData_AddFieldString(datahandle, "user", pReqLogin->User);
-    YTData_AddFieldPwd(datahandle, "pwd", pReqLogin->Password);
+    YTData_AddFieldString(datahandle, "usercode", pReqLogin->User);
+    YTData_AddFieldPwd(datahandle, "password", pReqLogin->Password);
     SendData(datahandle,150001,conn_login);
   }  
 
@@ -938,7 +940,7 @@ void __stdcall CallBackTimeOut(void * pConn, int reqno, unsigned int funcid)
 		tagTradeCallBackStatus *pCallBackStatus = new tagTradeCallBackStatus();
 		pCallBackStatus->status = 0;
 		strcpy(pCallBackStatus->statusname ,"连接被关闭了！");
-		pFuncList->Func_TradeCallBackStatus(pCallBackStatus);
+		//pFuncList->Func_TradeCallBackStatus(pCallBackStatus);
 		delete pCallBackStatus;
 
 	}
